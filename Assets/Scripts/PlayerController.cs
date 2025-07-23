@@ -1,229 +1,216 @@
-using NUnit.Framework;
 using System.Collections;
-using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
-using UnityEngine.EventSystems;
-using static GameStateManager;
 
+/// <summary>
+/// Controls player movement, jumping, and interactions with obstacles.
+/// </summary>
 public class PlayerController : MonoBehaviour
 {
-    
-    public float moveSpeed = 50f;
+    [Header("Movement Settings")]
+    [Tooltip("The speed at which the player moves based on input.")]
+    public float playerInputSpeed = 50f;
+    [Tooltip("The force applied to the player when jumping.")]
     public float jumpHeight = 10f;
-    public bool isOnPlatform;
-    public Rigidbody rb;
-    public Animator animator;
-    public GameObject InGameUI;
 
-    public AnimationToRagdoll ragdollAnim;
-
-    private Rigidbody[] ragdollRigidbodies;
-   
-
-    private Collider collider;
+    [Header("UI and Effects")]
+    [Tooltip("The in-game UI canvas.")]
+    public GameObject inGameUI;
+    [Tooltip("The fruit splatter prefab.")]
     public GameObject fruitSplatter;
+
+    [Header("Component References")]
+    [Tooltip("The animator for the player character.")]
+    public Animator animator;
+    [Tooltip("Reference to the ragdoll animation script.")]
+    public AnimationToRagdoll ragdollAnim;
+    [Tooltip("Reference to the platform controller script.")]
     public PlatformController platformController;
-    private Vector3 campos;
 
-    private Vector3 platformVelocity;
-    private bool jump;
-    private Vector3 backDirection = -Vector3.forward;
+    public bool IsOnPlatform { get; private set; }
 
-    private Vector3 moveDirection;
-    private Vector3 speed;
+    private Rigidbody _playerRigidbody;
+    private bool _isJumpInput;
+    private Vector3 _moveDirection;
+    private bool _isCollided;
 
-    private bool isCollided=false;
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    private void RigidBodySetup()
+    /// <summary>
+    /// Awake is called for initialization process
+    /// Rigidbody setup is moved to Awake function from Start.
+    /// </summary>
+    private void Awake()
     {
-        rb = GetComponent<Rigidbody>();
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
-        isOnPlatform = false;
-
+        
+        _playerRigidbody = GetComponent<Rigidbody>();
+        _playerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
-    private float startTime;
-    private float elapsedTime;
 
-    private Vector3 pos0;
-    void Start()
+    private void Start()
     {
-        RigidBodySetup();
-        startTime = Time.time;
-        pos0 = rb.position;
+        IsOnPlatform = false;
+        _isCollided = false;
         animator.CrossFade("Base Layer.Walk", 0.2f);
-
-        isCollided=false;
-
     }
 
-
-
-    private void ApplyPlatformMovement()
-    { 
-        //get platform's world sapce Velocity
-        Vector3 platformVelocity = platformController.GetCurrentVelocity()* Time.fixedDeltaTime;
-        rb.MovePosition(rb.position +platformVelocity);
-    
-    }
-
-    private void ApplyInputMovement()
+    private void Update()
     {
-        //calculate desired movement
-        speed = moveDirection * moveSpeed;
-        rb.linearVelocity = new Vector3(speed.x, rb.linearVelocity.y, speed.z);
-        
-    
-    }
-    private void HandleJump()
-    {
-        //Handle Jumping
-        if (jump && isOnPlatform)
-        {
-            rb.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
-            Vector3 jumpVelocity = new Vector3(rb.linearVelocity.x,
-                jumpHeight, rb.linearVelocity.z);
-            rb.linearVelocity = jumpVelocity;
-        }
-    }
-    
- 
-
-    private bool isPlayingKnockBack=false;
-
-    public void SetKnockBack(bool var)
-    {
-        isPlayingKnockBack = var;
-    }
-    private void PlayerInputHandling()
-    {
-        //Get player input
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-        jump = Input.GetKeyDown(KeyCode.Space);
-
-        //normalize input direction.
-        moveDirection = new Vector3(h, 0, v);
-
-        if (moveDirection.magnitude > 0)
-        {
-           
-
-           if (animator.GetCurrentAnimatorStateInfo(0).IsName("Base Layer.KnockBack"))
-           {
-                if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1f)
-                {
-                    animator.CrossFade("Base Layer.Walk", 0f);
-                }
-               
-           }
-
-            
-        }
-        
-
+        HandlePlayerInput();
+        HandleJump();
     }
 
     private void FixedUpdate()
     {
-         ApplyPlatformMovement();
-        if(!isCollided)
+        ApplyPlatformMovement();
+        if (!_isCollided)
         {
-           
             ApplyInputMovement();
         }
-    }
-    private void Update()
-    {
-        elapsedTime = Time.time - startTime;
-
-       
-        PlayerInputHandling();
-        HandleJump();
-
-        
-
-       
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        //knockback
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-          
-            //calculate horizontal direction from fruit->player
-            Vector3 horizontal_direction = (transform.position - collision.transform.position).normalized;
-
-            //Define launch angle and initial speed
-            float launch_angle = 15f;
-            float initial_speed = 1f;
-
-            float radians = launch_angle * (Mathf.PI / 180);
-
-            //calculate horizontal and vertical speed
-            float horizontal_speed_component = initial_speed * Mathf.Cos(radians);
-            float vertical_speed_component = initial_speed * Mathf.Sin(radians);
-
-            Vector3 knockback = new Vector3(
-                horizontal_direction.x * horizontal_speed_component,
-                vertical_speed_component,
-                  horizontal_direction.z * horizontal_speed_component
-                );
-            rb.AddForce(knockback, ForceMode.Impulse);
-
-
-            StartCoroutine(OnGoingRagdoll());
-      
+            HandleObstacleCollision(collision);
+            StartCoroutine(nameof(OnGoingRagdoll));
+            return;
         }
-        //blind the player
-        else if (collision.gameObject.CompareTag("Obstacle_Blind"))
+
+        if (collision.gameObject.CompareTag("Obstacle_Blind"))
         {
-            StartCoroutine("CreateFruitSplatter");
+            StartCoroutine(nameof(CreateFruitSplatter));
             Destroy(collision.gameObject);
+            return;
         }
 
-        else {
-            isOnPlatform = true;
-        }
-
-
-    }
-    IEnumerator OnGoingRagdoll()
-    {
-        isCollided=true;
-        Rigidbody rb=GetComponent<Rigidbody>();
-        rb.isKinematic=true;
-  
-        
-        yield return new WaitForSeconds(ragdollAnim.getRespawnTime());
-        isCollided = false;
-        rb.isKinematic=false;
-    }
-
-    IEnumerator CreateFruitSplatter()
-    {
-        GameObject splatter =Instantiate(fruitSplatter);
-        splatter.transform.parent = InGameUI.transform;
-        
-        //half X and Y of the screen resolution
-        Vector3 position=2*InGameUI.GetComponent<RectTransform>().position;
-        Vector2 xy = new Vector2(Random.Range(0, position.x), Random.Range(0, position.y));
-        
-        splatter.transform.position = xy;
-        yield return new WaitForSeconds(2);
-        Destroy( splatter );
+        IsOnPlatform = true;
     }
 
     private void OnCollisionExit(Collision collision)
     {
         if (!collision.gameObject.CompareTag("Obstacle"))
         {
-            isOnPlatform = false;
+            IsOnPlatform = false;
         }
-
-        
     }
 
+    /// <summary>
+    /// Handles player input for movement and jumping.
+    /// </summary>
+    private void HandlePlayerInput()
+    {
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
+        _isJumpInput = Input.GetKeyDown(KeyCode.Space);
+
+        _moveDirection = new Vector3(horizontal, 0, vertical).normalized;
+
+        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+
+
+        bool isMoveInputPressed = _moveDirection.magnitude > 0;
+        bool isTimeForShiftToWalkAnim = stateInfo.IsName("Base Layer.KnockBack")
+            && stateInfo.normalizedTime > 1f;
+        if (isMoveInputPressed && isTimeForShiftToWalkAnim)
+        {
+            animator.CrossFade("Base Layer.Walk", 0f);
+        }
+    }
+
+    /// <summary>
+    /// Applies movement to the player based on the platform's velocity.
+    /// MovePosition is used for non-physics based movement.
+    /// </summary>
+    private void ApplyPlatformMovement()
+    {
+        if (platformController != null)
+        {
+            Vector3 platformVelocity = platformController.GetCurrentVelocity() * Time.fixedDeltaTime;
+            _playerRigidbody.MovePosition(_playerRigidbody.position + platformVelocity);
+        }
+    }
+
+    /// <summary>
+    /// Applies movement to the player based on user input.
+    /// Linear Velocity is used for non-physics based movement.
+    /// </summary>
+    private void ApplyInputMovement()
+    {
+        Vector3 playerVelocity = _moveDirection * playerInputSpeed;
+        _playerRigidbody.linearVelocity = new Vector3(playerVelocity.x, _playerRigidbody.linearVelocity.y, playerVelocity.z);
+    }
+
+    /// <summary>
+    /// Makes the player jump if jump input is detected and the player is on a platform.
+    /// LinearVelocity = jumpVelocity is removed.
+    /// </summary>
+    private void HandleJump()
+    {
+        if (_isJumpInput && IsOnPlatform)
+        {
+            _playerRigidbody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+        }
+    }
+
+    /// <summary>
+    /// Handles the knockback effect when colliding with an obstacle.
+    /// </summary>
+    /// <param name="collision">The collision data.</param>
+    private void HandleObstacleCollision(Collision collision)
+    {
+        Vector3 horizontalDirection = (transform.position - collision.transform.position).normalized;
+        const float launchAngle = 15f;
+        const float initialSpeed = 1f;
+
+        float radians = launchAngle * Mathf.Deg2Rad;
+        float horizontalSpeedComponent = initialSpeed * Mathf.Cos(radians);
+        float verticalSpeedComponent = initialSpeed * Mathf.Sin(radians);
+
+        Vector3 knockback = new Vector3(
+            horizontalDirection.x * horizontalSpeedComponent,
+            verticalSpeedComponent,
+            horizontalDirection.z * horizontalSpeedComponent
+        );
+
+        _playerRigidbody.AddForce(knockback, ForceMode.Impulse);
+    }
+
+    /// <summary>
+    /// Coroutine to handle the ragdoll state and respawn timer.
+    /// </summary>
+    private IEnumerator OnGoingRagdoll()
+    {
+        _isCollided = true;
+        _playerRigidbody.isKinematic = true;
+
+        yield return new WaitForSeconds(ragdollAnim.getRespawnTime());
+
+        _isCollided = false;
+        _playerRigidbody.isKinematic = false;
+    }
+
+    /// <summary>
+    /// Coroutine to create a fruit splatter effect on the UI.
+    /// </summary>
+    private IEnumerator CreateFruitSplatter()
+    {
+        if (inGameUI == null || fruitSplatter == null)
+        {
+            yield break;
+        }
+
+        GameObject splatter = Instantiate(fruitSplatter, inGameUI.transform);
+
+        if (inGameUI.transform is RectTransform rectTransform)
+        {
+            Vector2 position = new Vector2(
+                Random.Range(0, rectTransform.rect.width),
+                Random.Range(0, rectTransform.rect.height)
+            );
+            splatter.transform.localPosition = position;
+        }
+
+        yield return new WaitForSeconds(2);
+        Destroy(splatter);
+    }
 }

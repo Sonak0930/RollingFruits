@@ -1610,6 +1610,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 977861234}
     - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: inGameUI
+      value: 
+      objectReference: {fileID: 977861234}
+    - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
       propertyPath: moveSpeed
       value: 14
       objectReference: {fileID: 0}
