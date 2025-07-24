@@ -9,30 +9,30 @@ public class PlayerController : MonoBehaviour
 {
     [Header("Movement Settings")]
     [Tooltip("The speed at which the player moves based on input.")]
-    public float playerInputSpeed = 50f;
+    public float PlayerInputSpeed = 50f;
     [Tooltip("The force applied to the player when jumping.")]
-    public float jumpHeight = 10f;
+    public float JumpHeight = 10f;
 
     [Header("UI and Effects")]
     [Tooltip("The in-game UI canvas.")]
-    public GameObject inGameUI;
+    public GameObject InGameUI;
     [Tooltip("The fruit splatter prefab.")]
-    public GameObject fruitSplatter;
+    public GameObject FruitSplatter;
 
     [Header("Component References")]
     [Tooltip("The animator for the player character.")]
-    public Animator animator;
+    public Animator Animator;
     [Tooltip("Reference to the ragdoll animation script.")]
-    public AnimationToRagdoll ragdollAnim;
+    public AnimationToRagdoll RagdollAnim;
     [Tooltip("Reference to the platform controller script.")]
-    public PlatformController platformController;
+    public PlatformController PlatformController;
 
     public bool IsOnPlatform { get; private set; }
 
-    private Rigidbody _playerRigidbody;
-    private bool _isJumpInput;
-    private Vector3 _moveDirection;
-    private bool _isCollided;
+    private Rigidbody playerRigidbody;
+    private bool isJumpInput;
+    private Vector3 moveDirection;
+    private bool isCollided;
 
     /// <summary>
     /// Awake is called for initialization process
@@ -40,16 +40,16 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void Awake()
     {
-        
-        _playerRigidbody = GetComponent<Rigidbody>();
-        _playerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
+
+        playerRigidbody = GetComponent<Rigidbody>();
+        playerRigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 
     private void Start()
     {
         IsOnPlatform = false;
-        _isCollided = false;
-        animator.CrossFade("Base Layer.Walk", 0.2f);
+        isCollided = false;
+        Animator.CrossFade("Base Layer.Walk", 0.2f);
     }
 
     private void Update()
@@ -61,23 +61,20 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         ApplyPlatformMovement();
-        if (!_isCollided)
-        {
+        if (!isCollided) {
             ApplyInputMovement();
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.gameObject.CompareTag("Obstacle"))
-        {
+        if (collision.gameObject.CompareTag("Obstacle")) {
             HandleObstacleCollision(collision);
             StartCoroutine(nameof(OnGoingRagdoll));
             return;
         }
 
-        if (collision.gameObject.CompareTag("Obstacle_Blind"))
-        {
+        if (collision.gameObject.CompareTag("Obstacle_Blind")) {
             StartCoroutine(nameof(CreateFruitSplatter));
             Destroy(collision.gameObject);
             return;
@@ -88,8 +85,7 @@ public class PlayerController : MonoBehaviour
 
     private void OnCollisionExit(Collision collision)
     {
-        if (!collision.gameObject.CompareTag("Obstacle"))
-        {
+        if (!collision.gameObject.CompareTag("Obstacle")) {
             IsOnPlatform = false;
         }
     }
@@ -101,19 +97,18 @@ public class PlayerController : MonoBehaviour
     {
         float horizontal = Input.GetAxisRaw("Horizontal");
         float vertical = Input.GetAxisRaw("Vertical");
-        _isJumpInput = Input.GetKeyDown(KeyCode.Space);
+        isJumpInput = Input.GetKeyDown(KeyCode.Space);
 
-        _moveDirection = new Vector3(horizontal, 0, vertical).normalized;
+        moveDirection = new Vector3(horizontal, 0, vertical).normalized;
 
-        AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
+        AnimatorStateInfo stateInfo = Animator.GetCurrentAnimatorStateInfo(0);
 
 
-        bool isMoveInputPressed = _moveDirection.magnitude > 0;
+        bool isMoveInputPressed = moveDirection.magnitude > 0;
         bool isTimeForShiftToWalkAnim = stateInfo.IsName("Base Layer.KnockBack")
             && stateInfo.normalizedTime > 1f;
-        if (isMoveInputPressed && isTimeForShiftToWalkAnim)
-        {
-            animator.CrossFade("Base Layer.Walk", 0f);
+        if (isMoveInputPressed && isTimeForShiftToWalkAnim) {
+            Animator.CrossFade("Base Layer.Walk", 0f);
         }
     }
 
@@ -123,10 +118,9 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void ApplyPlatformMovement()
     {
-        if (platformController != null)
-        {
-            Vector3 platformVelocity = platformController.GetCurrentVelocity() * Time.fixedDeltaTime;
-            _playerRigidbody.MovePosition(_playerRigidbody.position + platformVelocity);
+        if (PlatformController != null) {
+            Vector3 platformVelocity = PlatformController.GetCurrentVelocity() * Time.fixedDeltaTime;
+            playerRigidbody.MovePosition(playerRigidbody.position + platformVelocity);
         }
     }
 
@@ -136,8 +130,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void ApplyInputMovement()
     {
-        Vector3 playerVelocity = _moveDirection * playerInputSpeed;
-        _playerRigidbody.linearVelocity = new Vector3(playerVelocity.x, _playerRigidbody.linearVelocity.y, playerVelocity.z);
+        Vector3 playerVelocity = moveDirection * PlayerInputSpeed;
+        playerRigidbody.linearVelocity = new Vector3(playerVelocity.x, playerRigidbody.linearVelocity.y, playerVelocity.z);
     }
 
     /// <summary>
@@ -146,9 +140,8 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private void HandleJump()
     {
-        if (_isJumpInput && IsOnPlatform)
-        {
-            _playerRigidbody.AddForce(Vector3.up * jumpHeight, ForceMode.Impulse);
+        if (isJumpInput && IsOnPlatform) {
+            playerRigidbody.AddForce(Vector3.up * JumpHeight, ForceMode.Impulse);
         }
     }
 
@@ -172,7 +165,7 @@ public class PlayerController : MonoBehaviour
             horizontalDirection.z * horizontalSpeedComponent
         );
 
-        _playerRigidbody.AddForce(knockback, ForceMode.Impulse);
+        playerRigidbody.AddForce(knockback, ForceMode.Impulse);
     }
 
     /// <summary>
@@ -180,13 +173,13 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private IEnumerator OnGoingRagdoll()
     {
-        _isCollided = true;
-        _playerRigidbody.isKinematic = true;
+        isCollided = true;
+        playerRigidbody.isKinematic = true;
 
-        yield return new WaitForSeconds(ragdollAnim.getRespawnTime());
+        yield return new WaitForSeconds(RagdollAnim.getRespawnTime());
 
-        _isCollided = false;
-        _playerRigidbody.isKinematic = false;
+        isCollided = false;
+        playerRigidbody.isKinematic = false;
     }
 
     /// <summary>
@@ -194,15 +187,13 @@ public class PlayerController : MonoBehaviour
     /// </summary>
     private IEnumerator CreateFruitSplatter()
     {
-        if (inGameUI == null || fruitSplatter == null)
-        {
+        if (InGameUI == null || FruitSplatter == null) {
             yield break;
         }
 
-        GameObject splatter = Instantiate(fruitSplatter, inGameUI.transform);
+        GameObject splatter = Instantiate(FruitSplatter, InGameUI.transform);
 
-        if (inGameUI.transform is RectTransform rectTransform)
-        {
+        if (InGameUI.transform is RectTransform rectTransform) {
             Vector2 position = new Vector2(
                 Random.Range(0, rectTransform.rect.width),
                 Random.Range(0, rectTransform.rect.height)

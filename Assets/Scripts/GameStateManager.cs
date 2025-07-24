@@ -8,6 +8,10 @@ using UnityEngine.XR;
 
 public class GameStateManager : MonoBehaviour
 {
+
+    /// <summary>
+    /// Description of the GameState.
+    /// </summary>
     public enum GameState
     {
         MainMenu,
@@ -17,31 +21,47 @@ public class GameStateManager : MonoBehaviour
         Clear
     }
 
-   
+    [Header("Reference section for each UI")]
     public GameObject MainMenuUI;
     public GameObject InGameMenuUI;
     public GameObject PauseMenuUI;
     public GameObject GameOverMenuUI;
     public GameObject ClearUI;
 
-    public GameObject endPos;
-    public List<GameObject> platformSource;
-    public ObstacleSpawner obsSpawner;
-    private Queue<GameObject> platforms;
+    [Header("Platform resources")]
+    [Tooltip("The position where platform is destroyed")]
+    public GameObject platformEndPosition;
+    [Tooltip("Container to store different kinds of platform prefabs")]
+    public List<GameObject> platformReferenceList;
+    [Tooltip("Reference to the obstacleSpawner")]
+    public ObstacleSpawner obstacleSpawner;
+    [Tooltip("Queue to manage the runtime platform instances")]
+    private Queue<GameObject> platformInstanceList;
+    [Tooltip("Interval for platform generation")]
     private float spawnInterval = 2f;
 
-    public TextMeshProUGUI elapsedTime;
+    [Header("UI reference")]
+    public TextMeshProUGUI elapsedTimeUGUI;
 
+    [Header("GamePlay references")]
     public GameObject player;
-    public GameObject deadPlane;
+    public GameObject bottomDeadlineIndicator;
+    [Tooltip("Delay between scene transition")]
+    [Range(0.1f,0.5f)]
     public float SceneTransitionDelay = 0.3f;
+
+    [Header("Time section")]
+    [Tooltip("Total duration of the game")]
     public float gametime;
 
     private float time_start;
     private float time_current;
-    private float time_end = 60f;
-    private float gameTimer = 10f;
-    private int platformIndex=0;
+ 
+
+    [Tooltip("0: basic platform, 1:deformed platform")]
+    private int indexBasicPlatform=0;
+    private int indexDeformedPlatform = 1;
+
     public GameState GetGameState() { return CurrentState; }
     public void ChangeState(GameState state) 
     {
@@ -53,7 +73,7 @@ public class GameStateManager : MonoBehaviour
     {
         ChangeState(GameState.MainMenu);
         
-        platforms = new Queue<GameObject>();
+        platformInstanceList = new Queue<GameObject>();
 
         time_start = Time.time;
         time_current = 0f;
@@ -72,15 +92,15 @@ public class GameStateManager : MonoBehaviour
     void Update()
     {
         time_current = Time.time - time_start;
-        elapsedTime.text = time_current.ToString();
+        elapsedTimeUGUI.text = time_current.ToString();
        
-        if (platforms.Count > 0)
+        if (platformInstanceList.Count > 0)
         {
-            GameObject frontPlatform = platforms.Peek();
-            if (frontPlatform.transform.position.z < endPos.transform.position.z)
+            GameObject frontPlatform = platformInstanceList.Peek();
+            if (frontPlatform.transform.position.z < platformEndPosition.transform.position.z)
             {
        
-                platforms.Dequeue();
+                platformInstanceList.Dequeue();
                 Destroy(frontPlatform);
        
             }
@@ -88,7 +108,7 @@ public class GameStateManager : MonoBehaviour
 
         
 
-        if(player.transform.position.y<deadPlane.transform.position.y )
+        if(player.transform.position.y<bottomDeadlineIndicator.transform.position.y )
         {
             ChangeState(GameState.GameOver);
             SceneManager.LoadScene(0);
@@ -157,8 +177,8 @@ public class GameStateManager : MonoBehaviour
     private void SpawnPlatform()
     {
         Vector3 spawnPos = this.transform.position;
-        GameObject platform = Instantiate(platformSource[platformIndex], spawnPos, Quaternion.identity);
-        platforms.Enqueue(platform);
+        GameObject platform = Instantiate(platformReferenceList[indexBasicPlatform], spawnPos, Quaternion.identity);
+        platformInstanceList.Enqueue(platform);
 
         
     }

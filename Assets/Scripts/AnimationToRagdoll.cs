@@ -3,93 +3,83 @@ using UnityEngine;
 
 public class AnimationToRagdoll : MonoBehaviour
 {
-    [SerializeField]Collider col;
-    [SerializeField]Rigidbody rb;
-    [SerializeField]GameObject hip;
-    [SerializeField]Camera camera;
-    [SerializeField] float respawnTime=30f;
+    public Collider playerCollider;
+    public Rigidbody playerRigidbody;
+    public GameObject playerHip;
+    public Camera playerMainCamera;
+    public float respawnTime = 30f;
     Rigidbody[] rigidbodies;
     Collider[] colliders;
 
 
-    bool bIsRagdoll=false;
+    bool IsRagdoll = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        rigidbodies=GetComponentsInChildren<Rigidbody>();
-        colliders=GetComponentsInChildren<Collider>();
+        rigidbodies = GetComponentsInChildren<Rigidbody>();
+        colliders = GetComponentsInChildren<Collider>();
         ToggleRagdoll(true);
     }
 
     void Update()
     {
-        CameraHandling();
+        SwitchCameraTransformWhenRagdoll();
     }
 
-    public float getRespawnTime(){return respawnTime;}
+    public float getRespawnTime() { return respawnTime; }
 
-    private void CameraHandling()
+    private void SwitchCameraTransformWhenRagdoll()
     {
-        if(!bIsRagdoll)
-        {
-            //camera positioning
-            Vector3 campos = this.transform.position + new Vector3(0f, 5f, -10f);
-            camera.transform.position = campos;
-            camera.transform.LookAt(this.transform, new Vector3(0f, 1f, 0f));
-        }
+        if (IsRagdoll) {
+            Vector3 campos = playerHip.transform.position + new Vector3(0f, 5f, -10f);
+            playerMainCamera.transform.position = campos;
+            playerMainCamera.transform.LookAt(playerHip.transform, new Vector3(0f, 1f, 0f));
 
-        else{
-            //camera positioning
-            Vector3 campos = hip.transform.position + new Vector3(0f, 5f, -10f);
-            camera.transform.position = campos;
-            camera.transform.LookAt(hip.transform, new Vector3(0f, 1f, 0f));
-            
+        } else {
+            Vector3 campos = this.transform.position + new Vector3(0f, 5f, -10f);
+            playerMainCamera.transform.position = campos;
+            playerMainCamera.transform.LookAt(this.transform, new Vector3(0f, 1f, 0f));
+
         }
-    } 
+    }
     private void ToggleRagdoll(bool bisAnimating)
     {
-        bIsRagdoll=!bisAnimating;
+        IsRagdoll = !bisAnimating;
         //myCollider.enabled=bisAnimating;
 
-        foreach(Rigidbody ragdollBone in rigidbodies)
-        {
-           
-            ragdollBone.isKinematic=bisAnimating;
+        foreach (Rigidbody ragdollBone in rigidbodies) {
 
-            
+            ragdollBone.isKinematic = bisAnimating;
         }
 
-        foreach(Collider collider in colliders)
-        {
-            Physics.IgnoreCollision(collider,col);
+        foreach (Collider collider in colliders) {
+            Physics.IgnoreCollision(collider, playerCollider);
         }
 
-        rb.isKinematic=false;
+        playerRigidbody.isKinematic = false;
 
-        GetComponent<Animator>().enabled=bisAnimating;
-        if(bisAnimating)
-        {
-            RandomAnimation();
+        GetComponent<Animator>().enabled = bisAnimating;
+        if (bisAnimating) {
+            PlayWalkAnimation();
         }
 
-  
+
     }
 
-    void RandomAnimation()
+    void PlayWalkAnimation()
     {
-   
-        Animator animator =GetComponent<Animator>();
-      
-        animator.CrossFade("Base Layer.Walk",0.2f);
-        
-       
+
+        Animator animator = GetComponent<Animator>();
+
+        animator.CrossFade("Base Layer.Walk", 0.2f);
+
+
     }
 
     private void OnCollisionEnter(Collision collision)
     {
         Debug.Log("collision" + collision.gameObject.name);
-        if(!bIsRagdoll && collision.gameObject.CompareTag("Obstacle"))
-        {
+        if (!IsRagdoll && collision.gameObject.CompareTag("Obstacle")) {
             Debug.Log("ragdoll!");
             ToggleRagdoll(false); //->enable ragdoll.
             StartCoroutine(GetBackUp());
@@ -101,7 +91,7 @@ public class AnimationToRagdoll : MonoBehaviour
 
         yield return new WaitForSeconds(respawnTime);
         ToggleRagdoll(true);
-        this.transform.position=hip.transform.position;
+        this.transform.position = playerHip.transform.position;
     }
 
 

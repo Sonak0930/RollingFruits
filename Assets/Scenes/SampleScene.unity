@@ -263,7 +263,7 @@ GameObject:
   - component: {fileID: 18744904}
   - component: {fileID: 18744903}
   m_Layer: 0
-  m_Name: DeadLight
+  m_Name: SpotLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -784,7 +784,7 @@ GameObject:
   - component: {fileID: 155610020}
   - component: {fileID: 155610019}
   m_Layer: 0
-  m_Name: DeadLight
+  m_Name: SpotLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1428,13 +1428,13 @@ MonoBehaviour:
   PauseMenuUI: {fileID: 636144481}
   GameOverMenuUI: {fileID: 578632389}
   ClearUI: {fileID: 892922756}
-  endPos: {fileID: 1258130652}
-  platformSource:
+  platformEndPosition: {fileID: 1258130652}
+  platformReferenceList:
   - {fileID: 547988880071823919, guid: 9d353180f80010d4da2801be3f84d0d3, type: 3}
-  obsSpawner: {fileID: 1935782229}
-  elapsedTime: {fileID: 570100075}
+  obstacleSpawner: {fileID: 1935782229}
+  elapsedTimeUGUI: {fileID: 570100075}
   player: {fileID: 447477480}
-  deadPlane: {fileID: 1166639635}
+  bottomDeadlineIndicator: {fileID: 1166639635}
   SceneTransitionDelay: 0.3
   gametime: 60
 --- !u!4 &412483968
@@ -1593,6 +1593,32 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3202728667482007736, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
   m_PrefabInstance: {fileID: 483746394}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &447477483 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: -3836704652795240111, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+  m_PrefabInstance: {fileID: 483746394}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 447477480}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97bdfb9befe84f443b2efbb9272f962b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!95 &447477485 stripped
+Animator:
+  m_CorrespondingSourceObject: {fileID: 8203760514731616376, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+  m_PrefabInstance: {fileID: 483746394}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &447477486 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 2258126292293808795, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+  m_PrefabInstance: {fileID: 483746394}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &447477487 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 7527600062147726910, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+  m_PrefabInstance: {fileID: 483746394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &483746394
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1605,6 +1631,26 @@ PrefabInstance:
       propertyPath: camera
       value: 
       objectReference: {fileID: 330585545}
+    - target: {fileID: -3836704652795240111, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: playerHip
+      value: 
+      objectReference: {fileID: 623026323}
+    - target: {fileID: -3836704652795240111, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: playerCollider
+      value: 
+      objectReference: {fileID: 447477486}
+    - target: {fileID: -3836704652795240111, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: playerRigidbody
+      value: 
+      objectReference: {fileID: 447477487}
+    - target: {fileID: -3836704652795240111, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: playerMainCamera
+      value: 
+      objectReference: {fileID: 330585545}
+    - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: Animator
+      value: 
+      objectReference: {fileID: 447477485}
     - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
       propertyPath: InGameUI
       value: 
@@ -1618,9 +1664,29 @@ PrefabInstance:
       value: 14
       objectReference: {fileID: 0}
     - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: JumpHeight
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
       propertyPath: jumpHeight
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: RagdollAnim
+      value: 
+      objectReference: {fileID: 447477483}
+    - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: FruitSplatter
+      value: 
+      objectReference: {fileID: 761320362426222917, guid: 4ddb06691101e7841bf3e59745a0a98c, type: 3}
+    - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: PlayerInputSpeed
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: -497660965303147298, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+      propertyPath: PlatformController
+      value: 
+      objectReference: {fileID: 4415185845125638107, guid: 9d353180f80010d4da2801be3f84d0d3, type: 3}
     - target: {fileID: 2826484225556476418, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
       propertyPath: m_LocalPosition.x
       value: 3.56
@@ -1682,7 +1748,7 @@ GameObject:
   - component: {fileID: 570100076}
   - component: {fileID: 570100075}
   m_Layer: 5
-  m_Name: elapsedTime
+  m_Name: elapsedTimeUGUI
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2030,6 +2096,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
+--- !u!1 &623026323 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3437945863607438307, guid: b5d56c0173d8e1e4f83b659c9a698817, type: 3}
+  m_PrefabInstance: {fileID: 483746394}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &629759973
 GameObject:
   m_ObjectHideFlags: 0
@@ -2331,7 +2402,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c473be606854cec4b987597980a1ee52, type: 2}
     - target: {fileID: 919132149155446097, guid: 1e74d7d97fd1b304baf74c41e7728e58, type: 3}
       propertyPath: m_Name
-      value: VolumetricLightShaft (2)
+      value: SpotLightVolume (2)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2597,7 +2668,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c473be606854cec4b987597980a1ee52, type: 2}
     - target: {fileID: 919132149155446097, guid: 1e74d7d97fd1b304baf74c41e7728e58, type: 3}
       propertyPath: m_Name
-      value: VolumetricLightShaft (4)
+      value: SpotLightVolume (4)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2719,7 +2790,7 @@ GameObject:
   - component: {fileID: 840141282}
   - component: {fileID: 840141281}
   m_Layer: 0
-  m_Name: DeadLightManager
+  m_Name: SpotLightManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2737,14 +2808,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff557db612a3b86489cb4ad54c1f39a3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  deadlights:
+  spotLightReferenceList:
   - {fileID: 2072738033}
   - {fileID: 1330815065}
   - {fileID: 643655230}
   - {fileID: 1244107938}
   - {fileID: 718990543}
-  platformSource: {fileID: 547988880071823919, guid: 9d353180f80010d4da2801be3f84d0d3, type: 3}
-  moveSpeed: 0.01
+  platformReference: {fileID: 547988880071823919, guid: 9d353180f80010d4da2801be3f84d0d3, type: 3}
+  lightMoveSpeed: 0.1
 --- !u!4 &840141282
 Transform:
   m_ObjectHideFlags: 0
@@ -3209,7 +3280,7 @@ GameObject:
   - component: {fileID: 1147634083}
   - component: {fileID: 1147634082}
   m_Layer: 0
-  m_Name: DeadLight
+  m_Name: SpotLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3330,7 +3401,7 @@ GameObject:
   - component: {fileID: 1166639639}
   - component: {fileID: 1166639638}
   m_Layer: 0
-  m_Name: DeadPlane
+  m_Name: bottomDeadlineIndicator
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3591,7 +3662,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c473be606854cec4b987597980a1ee52, type: 2}
     - target: {fileID: 919132149155446097, guid: 1e74d7d97fd1b304baf74c41e7728e58, type: 3}
       propertyPath: m_Name
-      value: VolumetricLightShaft (3)
+      value: SpotLightVolume (3)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3876,7 +3947,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c473be606854cec4b987597980a1ee52, type: 2}
     - target: {fileID: 919132149155446097, guid: 1e74d7d97fd1b304baf74c41e7728e58, type: 3}
       propertyPath: m_Name
-      value: VolumetricLightShaft (1)
+      value: SpotLightVolume (1)
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4004,7 +4075,7 @@ PrefabInstance:
       objectReference: {fileID: 2100000, guid: c473be606854cec4b987597980a1ee52, type: 2}
     - target: {fileID: 919132149155446097, guid: 1e74d7d97fd1b304baf74c41e7728e58, type: 3}
       propertyPath: m_Name
-      value: VolumetricLightShaft
+      value: SpotLightVolume
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -4032,7 +4103,7 @@ GameObject:
   - component: {fileID: 1405901492}
   - component: {fileID: 1405901491}
   m_Layer: 0
-  m_Name: DeadLight
+  m_Name: SpotLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4325,6 +4396,7 @@ MonoBehaviour:
   deadPlane: {fileID: 1166639635}
   obstacleInstances: []
   UpdateObstacleInterval: 10
+  numOfWaves: 6
 --- !u!1 &1997658429
 GameObject:
   m_ObjectHideFlags: 0
@@ -4415,7 +4487,7 @@ GameObject:
   - component: {fileID: 2109642148}
   - component: {fileID: 2109642147}
   m_Layer: 0
-  m_Name: DeadLight
+  m_Name: SpotLight
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -5453,7 +5525,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 843707186492240554, guid: 41cbf106bdf10b04ab2f11ef934969a6, type: 3}
       propertyPath: m_Name
-      value: PlatformEnd
+      value: PlatformEndReference
       objectReference: {fileID: 0}
     - target: {fileID: 1147703188312310156, guid: 41cbf106bdf10b04ab2f11ef934969a6, type: 3}
       propertyPath: m_Enabled
@@ -5959,14 +6031,14 @@ SceneRoots:
   - {fileID: 412483968}
   - {fileID: 330585546}
   - {fileID: 6807965894697728631}
+  - {fileID: 1166639636}
+  - {fileID: 1935782228}
   - {fileID: 1144492061}
   - {fileID: 1224656046}
   - {fileID: 610524910}
   - {fileID: 1013351587}
-  - {fileID: 1935782228}
   - {fileID: 5425154296967842744}
   - {fileID: 8388867737850934782}
-  - {fileID: 1166639636}
   - {fileID: 308671580}
   - {fileID: 1284154727}
   - {fileID: 1405222133}

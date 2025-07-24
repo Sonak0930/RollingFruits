@@ -6,47 +6,41 @@ using UnityEngine;
 using UnityEngine.Rendering;
 public class PlatformController : MonoBehaviour
 {
+    [Header("Direction for platform to head")]
+    public Vector3 platformMovingDirection = -Vector3.forward;
 
-    [SerializeField]
-    public Vector3 moveDirection = -Vector3.forward;
-
-
+    [Header("Reference of PlayerController")]
     private PlayerController playerController;
 
-    [SerializeField]
+    [Header("Moving speed of the platform")]
     public float moveSpeed = 10f;
 
-    private Vector3 currentVelocity;
-    private Rigidbody rb;
+    private new Rigidbody rigidbody;
+
+
+ 
     public Vector3 GetCurrentVelocity()
     {
-        return moveDirection * moveSpeed;
+        return platformMovingDirection * moveSpeed;
     }
-    private float startTime;
-    private float elapsedTime;
 
-    private Vector3 pos0;
+    /// <summary>
+    /// Precise continuous collision detection is required between the player and the platform
+    /// </summary>
     private void Start()
     {
-        rb = transform.GetComponent<Rigidbody>();
-        rb.collisionDetectionMode = CollisionDetectionMode.Continuous;
-
-        startTime = Time.time;
-        pos0 = rb.position;
-
+        rigidbody = transform.GetComponent<Rigidbody>();
+        rigidbody.collisionDetectionMode = CollisionDetectionMode.Continuous;
     }
 
+    /// <summary>
+    /// MovePosition for continuous and static movement.
+    /// </summary>
     private void FixedUpdate()
     {
-
-        Vector3 speed = moveDirection * moveSpeed * Time.fixedDeltaTime;
-        //rb.AddForce(speed);
-        rb.MovePosition(rb.position + speed);
+        Vector3 speed = platformMovingDirection * moveSpeed * Time.fixedDeltaTime;
+        rigidbody.MovePosition(rigidbody.position + speed);
     }
 
-    private void Update()
-    {
-        elapsedTime = Time.time - startTime;
-    }
-
+  
 }

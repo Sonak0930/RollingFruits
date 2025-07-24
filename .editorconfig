@@ -1,0 +1,169 @@
+# top-most EditorConfig file
+root = true
+
+# ===================================================
+# Global Rules for all files (*)
+# ===================================================
+
+[*]
+# Charset: Use UTF-8 for all files
+charset = utf-8
+
+# Indentation: Use spaces for indentation
+indent_style = space
+# Indentation Size: Google C# style guide recommends 2 spaces for indentation
+indent_size = 4
+
+# End of Line: Use LF (Line Feed) for line endings (Unix-style)
+end_of_line = lf
+
+# Newline at End of File: Ensure a newline at the end of every file
+insert_final_newline = true
+
+# Trailing Whitespace: Remove any whitespace at the end of lines
+trim_trailing_whitespace = true
+
+# ===================================================
+# C# Specific Rules (*.cs)
+# Reference: https://google.github.io/styleguide/csharp-style.html
+# ===================================================
+
+[*.cs]
+# ----- Indentation and Braces -----
+
+# `indent_size` is already 2 from global settings.
+
+# csharp_indent_braces = false is typically preferred for K&R style braces
+# K&R style: { on the same line as the declaration
+csharp_indent_braces = false
+
+# Indent case contents in switch statements (Google recommends this)
+csharp_indent_case_contents_when_block = true
+csharp_indent_switch_labels = false # Google style: Don't indent switch labels (case/default)
+
+# ----- New Lines -----
+
+# New line before open brace:
+#   - For methods, properties, indexers, events, constructors, destructors, accessors: false (K&R style)
+#   - For types (classes, structs, interfaces, enums, delegates): false
+#   - For control flow statements (if, for, while, etc.): false
+csharp_new_line_before_open_brace = accessors, constructors, destructors, events, indexers, methods, properties, types
+
+# New line after colon in base type list (e.g., class MyClass : BaseClass)
+csharp_new_line_after_colon_in_base_type_list = DoNotPut
+
+# New line before else: false (Google prefers no newline before else)
+csharp_new_line_before_else = false
+
+# New line before catch: false
+csharp_new_line_before_catch = false
+
+# New line before finally: false
+csharp_new_line_before_finally = false
+
+# New line before members in object initializers: DoNotPut
+csharp_new_line_before_members_in_object_initializers = DoNotPut
+
+# New line before members in collection initializers: DoNotPut
+csharp_new_line_before_members_in_collection_initializers = DoNotPut
+
+# New line before members in anonymous types: DoNotPut
+csharp_new_line_before_members_in_anonymous_types = DoNotPut
+
+# ----- Spacing -----
+
+# Space after keywords in control flow statements (e.g., `if (`): true
+csharp_space_after_keywords_in_control_flow_statements = true
+
+# Space before open parenthesis (e.g., `Method (`): false
+csharp_space_before_open_paren = false
+
+# Space within parentheses (e.g., `( arg )`): false
+csharp_space_within_parentheses = false
+
+# Space between `[` and `]` (e.g., `array[ index ]`): false
+csharp_space_within_brackets = false
+
+# Space after commas (e.g., `arg1, arg2`): true
+csharp_space_after_comma = true
+
+# Space after semicolons in for statements (e.g., `for (i; j; k)`): true
+csharp_space_after_semicolon_in_for_statement = true
+
+# Space before semicolons in for statements: false
+csharp_space_before_semicolon_in_for_statement = false
+
+# Space around binary operators (e.g., `a + b`): true
+csharp_space_around_binary_operators = true
+
+# Space around type parameter constraints (e.g., `where T : class`): true
+csharp_space_around_type_parameter_constraints = true
+
+# Space before colon in base type list: false
+csharp_space_before_colon_in_base_type_list = false
+
+# Space after colon in base type list: true
+csharp_space_after_colon_in_base_type_list = true
+
+# Space around equality operators (e.g., `a == b`): true
+csharp_space_around_equality_operators = true
+
+# Space around assignment operators (e.g., `a = b`): true
+csharp_space_around_assignment_operators = true
+
+# Space after cast: false (e.g., `(int)x`)
+csharp_space_after_cast = false
+
+# Space before array brackets (e.g., `int[] arr`): false
+csharp_space_before_array_brackets = false
+
+# Space after `delegate` keyword (e.g., `delegate void MyDelegate()`): true
+csharp_space_after_delegate_keyword = true
+
+# Space before `delegate` parenthesis: true
+csharp_space_before_delegate_parenthesis = true
+
+# ----- Wrapping -----
+
+# Wrap long lines at 100 characters (soft limit, IDE usually handles this visually)
+# editorconfig does not directly enforce line length, but IDEs often respect this.
+# You might need to set this in your IDE's settings as well.
+max_line_length = 100
+
+# ----- Code Style (Beyond basic formatting) -----
+
+# Use 'var' when type is apparent (Google prefers explicit types but allows 'var' for clarity)
+# For strict Google style, you might set this to 'false' if you want explicit types always.
+# However, 'var' is common in modern C# and is often preferred for readability where type is obvious.
+csharp_style_var_for_built_in_types = false
+csharp_style_var_when_type_is_apparent = false
+csharp_style_var_elsewhere = false
+
+# Use expression-bodied members where possible (Google is flexible, often prefers blocks for clarity)
+csharp_style_expression_bodied_accessors = false
+csharp_style_expression_bodied_constructors = false
+csharp_style_expression_bodied_methods = false
+csharp_style_expression_bodied_operators = false
+csharp_style_expression_bodied_properties = false
+csharp_style_expression_bodied_indexers = false
+
+# Prefer throwing new InvalidOperationException() over ArgumentException() when appropriate
+csharp_style_prefer_throwing_primary_exception_for_empty_catch = true
+
+# Use `this.` or `base.` qualification
+# Google generally recommends avoiding unnecessary qualification.
+csharp_style_qualification_for_field = false:suggestion
+csharp_style_qualification_for_property = false:suggestion
+csharp_style_qualification_for_method = false:suggestion
+csharp_style_qualification_for_event = false:suggestion
+
+# Prefer `using static` over fully qualified names for static members
+csharp_style_prefer_static_local_function = false:suggestion
+
+# Order usings: System directives first, then alphabetical
+csharp_using_directive_placement = inside_namespace:suggestion
+file_header_template = unset
+
+# Organize members (this is a suggestion and may require manual application or specialized extensions)
+# https://google.github.io/styleguide/csharp-style.html#ordering
+# Not directly configurable via .editorconfig, but IDE extensions can help.
