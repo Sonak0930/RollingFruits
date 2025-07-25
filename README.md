@@ -22,6 +22,8 @@ On the next of the shoot, there was a post that looking for Fashion Model withou
 
 Please help this mannequin finish the runway successfully without felling down for a one minute!
 
+<img width="758" height="259" alt="image" src="https://github.com/user-attachments/assets/7b683e14-3c2a-48a7-a7a9-36773eb4a104" />
+
 - 어느날, 마네킹은 동물들이 찍은 패션 화보를 보게 됩니다.
 - 트위드 자켓을 입은 토끼, 트렌치 코트를 입은 강아지, 시스루 원피스를 입은 앵무새 그리고 수트를 입은 독수리를 보게 되었습니다.
 - 마네킹은 새 옷을 갖고 싶었지만, 주머니 사정이 좋지 않았습니다.
@@ -29,10 +31,39 @@ Please help this mannequin finish the runway successfully without felling down f
 - 경력 무관이라는 공고에 혹해서 마네킹은 첫 런웨이에 서기로 결심합니다.
 
   
-# Rules
+# Source Code
+## Player Control
+### Handle Obstacle Collision
 
-# Character Controls
+<img width="742" height="452" alt="image" src="https://github.com/user-attachments/assets/24fd6649-3607-4db7-95c6-c8bb9fab704b" />
 
-# Obstacles
+1. Calculate the Player-Relative Force.
+This is the direction between the fruit's forward direction and the player's position.
+The result vector is on the XZ plane.
+
+- 플레이어의 상대 위치를 정의합니다.
+- 이 방향은, 공의 진행방향과 플레이어의 위치에 따라 플레이어가 밀려날 방향을 XZ plane에서 정의합니다.
+
+  https://github.com/Sonak0930/RollingFruits/blob/d31bf915e32c723f9fe10f21796cb9efd51e94ae/Assets/Scripts/PlayerController.cs#L154
+
+
+<img width="634" height="468" alt="image" src="https://github.com/user-attachments/assets/cfb5d900-07f0-4622-9b47-9f9570fcd959" />
+
+2. Angular Knockback Force
+This represents the actual knockback force in YZ Direction.
+Z represents the horizontal Component, which is used for both XZ.
+Y determines the height of the force.
+
+- 넉백 힘을 정의합니다. 가로방향과 세로방향에서 각각 밀려날 힘의 크기를 정의합니다.
+
+https://github.com/Sonak0930/RollingFruits/blob/d31bf915e32c723f9fe10f21796cb9efd51e94ae/Assets/Scripts/PlayerController.cs#L158C8-L161C1
+
+<img width="1124" height="613" alt="image" src="https://github.com/user-attachments/assets/75e7a883-5722-4502-8743-c2b1ef8dd5bd" />
+
+3. Combine the two forces into one
+- 두 힘을 합해 최종 넉백을 정의합니다.
+
+https://github.com/Sonak0930/RollingFruits/blob/d31bf915e32c723f9fe10f21796cb9efd51e94ae/Assets/Scripts/PlayerController.cs#L162C9-L168C64
+
 
 
