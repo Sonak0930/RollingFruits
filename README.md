@@ -56,14 +56,15 @@ Y determines the height of the force.
 
 - 넉백 힘을 정의합니다. 가로방향과 세로방향에서 각각 밀려날 힘의 크기를 정의합니다.
 
-https://github.com/Sonak0930/RollingFruits/blob/d31bf915e32c723f9fe10f21796cb9efd51e94ae/Assets/Scripts/PlayerController.cs#L158C8-L161C1
+https://github.com/Sonak0930/RollingFruits/blob/d31bf915e32c723f9fe10f21796cb9efd51e94ae/Assets/Scripts/PlayerController.cs#L155-L160
 
 <img width="1124" height="613" alt="image" src="https://github.com/user-attachments/assets/75e7a883-5722-4502-8743-c2b1ef8dd5bd" />
 
 3. Combine the two forces into one
 - 두 힘을 합해 최종 넉백을 정의합니다.
 
-https://github.com/Sonak0930/RollingFruits/blob/d31bf915e32c723f9fe10f21796cb9efd51e94ae/Assets/Scripts/PlayerController.cs#L162C9-L168C64
+
+https://github.com/Sonak0930/RollingFruits/blob/d31bf915e32c723f9fe10f21796cb9efd51e94ae/Assets/Scripts/PlayerController.cs#L162-L165
 
 
 
