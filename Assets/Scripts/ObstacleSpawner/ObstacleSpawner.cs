@@ -15,10 +15,12 @@ public class ObstacleSpawner : MonoBehaviour
     [Range(0.1f,1.0f)]
     public float spawnInterval;
 
+    
+    public float obstacleSpeed = 500f;
     [Header("Speed Amplifier")]
     [Tooltip("It accelerates the velocity of the obstacle")]
-    [Range(20f,400f)]
-    public float speedAmplifier;
+    [Range(20f,500f)]
+    public float obstacleSpeedAmplifier;
 
     [Header("Platform GameObject")]
     public GameObject platformSource;
@@ -65,7 +67,7 @@ public class ObstacleSpawner : MonoBehaviour
             InvokeRepeating("SpawnApple", 0f, spawnInterval);
             if (i >= 1)
                 InvokeRepeating("SpawnCarrot", 0f, spawnInterval);
-            speedAmplifier += 100f;
+            obstacleSpeed += obstacleSpeedAmplifier;
             spawnInterval -= 0.15f;
             yield return new WaitForSeconds(UpdateObstacleInterval);
             CancelInvoke("SpawnApple");
@@ -92,7 +94,7 @@ public class ObstacleSpawner : MonoBehaviour
 
         Rigidbody appleRigidbody = obstacle.GetComponent<Rigidbody>();
         Vector3 appleSpeed = platformSource.GetComponent<PlatformController>().GetCurrentVelocity();
-        appleSpeed *= Time.fixedDeltaTime * speedAmplifier;
+        appleSpeed *= Time.fixedDeltaTime * obstacleSpeed;
 
         appleRigidbody.AddForce(appleSpeed);
     }
@@ -120,7 +122,7 @@ public class ObstacleSpawner : MonoBehaviour
         Vector3 carrotSpeed = platformSource.GetComponent<PlatformController>().GetCurrentVelocity();
 
         carrotSpeed.y = carrotSpeed.z * 0.5f;
-        carrotSpeed *= Time.fixedDeltaTime * speedAmplifier * 0.3f;
+        carrotSpeed *= Time.fixedDeltaTime * obstacleSpeed * 0.3f;
 
         carrotRigidbody.AddForce(carrotSpeed);
     }
@@ -133,7 +135,7 @@ public class ObstacleSpawner : MonoBehaviour
     {
         Vector3 obstacleConstSpeed = platformSource.GetComponent<PlatformController>().GetCurrentVelocity();
 
-        obstacleConstSpeed *= Time.fixedDeltaTime * speedAmplifier;
+        obstacleConstSpeed *= Time.fixedDeltaTime * obstacleSpeed;
 
         Vector3 angularVelocity = new Vector3(30f, 0f, 0f) * Time.fixedDeltaTime;
 

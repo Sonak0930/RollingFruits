@@ -60,8 +60,10 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        ApplyPlatformMovement();
+      
+        
         if (!isCollided) {
+            ApplyPlatformMovement();
             ApplyInputMovement();
         }
     }
@@ -151,6 +153,7 @@ public class PlayerController : MonoBehaviour
     /// <param name="collision">The collision data.</param>
     private void HandleObstacleCollision(Collision collision)
     {
+        
         Vector3 horizontalDirection = (transform.position - collision.transform.position).normalized;
         const float launchAngle = 15f;
         const float initialSpeed = 1f;
